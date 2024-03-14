@@ -31,12 +31,12 @@ func ValidateUserError(validationError error) *rest_error.RestError {
 	var jsonValidationError validator.ValidationErrors
 
 	if errors.As(validationError, &jsonErr) {
-		return rest_error.NewBadRequestError(jsonErr.Error())
+		return rest_error.NewBadRequestError("Invalid field type")
 	}
 	if errors.As(validationError, &jsonValidationError) {
-		var errorCauses = []rest_error.Causes{}
+		errorCauses := []rest_error.Causes{}
 
-		for _, err := range jsonValidationError {
+		for _, err := range validationError.(validator.ValidationErrors) {
 			cause := rest_error.Causes{
 				Message: err.Translate(transl),
 				Field:   err.Field(),
